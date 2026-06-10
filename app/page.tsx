@@ -28,7 +28,7 @@ const HOW_IT_WORKS = [
     icon: Shield,
     step: 'C',
     title: 'Gridlett enforces fair access',
-    body: 'Our IoT control layer monitors consumption in real time and keeps every user within their agreed share — automatically.',
+    body: 'Our energy control layer monitors consumption in real time and keeps every user within their agreed share — automatically.',
     color: 'amber',
   },
   {
@@ -227,7 +227,7 @@ export default function HomePage() {
         <div className="mt-16 relative">
           <HeroPowerOrb />
           <p className="text-xs text-brand-muted mt-4 tracking-widest uppercase font-medium">
-            IoT-controlled energy access
+            controlled energy access
           </p>
         </div>
       </section>
