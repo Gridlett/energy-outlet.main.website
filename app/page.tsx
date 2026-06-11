@@ -178,11 +178,17 @@ export default function HomePage() {
           <a href="#tiers" className="hover:text-white transition-colors">Tiers</a>
           <a href="#signup" className="hover:text-white transition-colors">Sign up</a>
         </div>
-        <a href="#signup"
-          className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
-          style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)' }}>
-          Get access
-        </a>
+        <div className="flex items-center gap-5">
+          <a href={`${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3000'}/login`}
+            className="text-sm font-semibold text-brand-muted hover:text-white transition-colors">
+            Login
+          </a>
+          <a href="#signup"
+            className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
+            style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)' }}>
+            Get access
+          </a>
+        </div>
       </nav>
 
       {/* ── HERO ── */}

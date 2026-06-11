@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Zap, Home, Building2, CheckCircle2, Loader2,
-  Wifi, Battery, Tv, Wind, Sun, ChevronRight
+  Wifi, Battery, Tv, Wind, Sun, ChevronRight, Eye, EyeOff
 } from 'lucide-react'
 
 interface MappedPlan {
@@ -31,6 +31,11 @@ const tenantSchema = z.object({
   propertyCode: z.string().length(9, 'Property code must be exactly 9 digits'),
   otpCode:      z.string().length(6, 'Verification code must be exactly 6 digits'),
   planId:       z.string().uuid('Invalid plan selected'),
+  password:     z.string().min(8, 'Password must be at least 8 characters')
+                  .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
+                  .regex(/[a-z]/, 'Must contain at least one lowercase letter')
+                  .regex(/[0-9]/, 'Must contain at least one digit')
+                  .regex(/[^A-Za-z0-9]/, 'Must contain at least one special character'),
 })
 
 const ownerSchema = z.object({
@@ -177,10 +182,12 @@ function TierCard({
 
 function TenantSignupForm({
   selectedPlanId,
+  setSelectedPlanId,
   plans,
   onSuccess,
 }: {
   selectedPlanId: string
+  setSelectedPlanId: (id: string) => void
   plans: any[]
   onSuccess: () => void
 }) {
@@ -208,6 +215,16 @@ function TenantSignupForm({
   const [otpSent, setOtpSent] = useState(false)
   const [lastSentNumber, setLastSentNumber] = useState('')
   const [apiError, setApiError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [isPending, setIsPending] = useState(false)
+
+  const password = watch('password') || ''
+  const hasMinLength = password.length >= 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasLowercase = /[a-z]/.test(password)
+  const hasNumber = /[0-9]/.test(password)
+  const hasSpecial = /[^A-Za-z0-9]/.test(password)
+  const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecial
 
   // Auto-trigger OTP when whatsapp number hits exactly 11 digits
   useEffect(() => {
@@ -258,6 +275,7 @@ function TenantSignupForm({
 
   const onSubmit = async (data: TenantForm) => {
     setApiError(null)
+    setIsPending(true)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
       const cleanedPropertyCode = cleanPropertyCode(data.propertyCode)
@@ -269,6 +287,7 @@ function TenantSignupForm({
         propertyCode: propertyCodeDigit,
         planId: data.planId,
         otpCode: data.otpCode,
+        password: data.password,
       }
 
       const res = await fetch(`${baseUrl}/v1/Onboarding/Customer/Self`, {
@@ -287,6 +306,8 @@ function TenantSignupForm({
       onSuccess()
     } catch (err: any) {
       setApiError(err.message)
+    } finally {
+      setIsPending(false)
     }
   }
 
@@ -397,36 +418,92 @@ function TenantSignupForm({
             )}
           </div>
 
-          {/* Current plan summary */}
-          {(() => {
-            const selectedPlan = plans.find(p => p.id === selectedPlanId)
-            if (!selectedPlan) return null
-            const mapped = mapBackendPlan(selectedPlan)
-            return (
-              <div className="flex items-center gap-3 p-4 rounded-xl"
-                style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', animation: 'fadeIn 0.3s ease-out' }}>
-                <Sun className="w-4 h-4 text-blue-400 shrink-0" />
-                <p className="text-sm text-brand-text">
-                  Subscribing to{' '}
-                  <span className="font-semibold text-blue-400">
-                    {mapped.name} Plan
-                  </span>
-                  {' '}({mapped.watt} cap)
-                </p>
-                <span className="ml-auto text-sm font-bold text-blue-400">
-                  {mapped.price}
-                  <span className="text-xs text-brand-muted font-normal">/mo</span>
-                </span>
+          <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <label className="field-label">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                {...register('password')}
+                placeholder="••••••••"
+                className={`field-input pr-10 ${errors.password ? 'error' : ''}`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-350 transition-colors focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-xs text-red-400 mt-1.5">{errors.password.message}</p>
+            )}
+            
+            {/* Password Requirement Checklist (Laws) */}
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs border border-brand-border/30 rounded-xl p-3 bg-brand-black/20">
+              <div className={`flex items-center gap-1.5 ${hasMinLength ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                At least 8 characters
               </div>
-            )
-          })()}
+              <div className={`flex items-center gap-1.5 ${hasUppercase ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                One uppercase letter
+              </div>
+              <div className={`flex items-center gap-1.5 ${hasLowercase ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                One lowercase letter
+              </div>
+              <div className={`flex items-center gap-1.5 ${hasNumber ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                One number
+              </div>
+              <div className={`flex items-center gap-1.5 ${hasSpecial ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                One special character
+              </div>
+            </div>
+          </div>
+
+          {/* Current plan summary dropdown */}
+          <div className="flex flex-col gap-1.5" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <label className="field-label">Selected Power Plan</label>
+            <div className="relative flex items-center rounded-xl overflow-hidden"
+              style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)' }}>
+              <div className="absolute left-4 pointer-events-none flex items-center justify-center">
+                <Sun className="w-5 h-5 text-blue-400" />
+              </div>
+              <select
+                value={selectedPlanId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedPlanId(val);
+                }}
+                className="w-full bg-transparent pl-12 pr-10 py-4 font-display font-semibold text-sm text-brand-text select-custom-icon appearance-none cursor-pointer focus:outline-none"
+                style={{ color: '#E2E8F0' }}
+              >
+                {plans.map((p) => {
+                  const m = mapBackendPlan(p);
+                  return (
+                    <option key={p.id} value={p.id} style={{ background: '#0D1525', color: '#E2E8F0' }}>
+                      {m.name} ({m.watt} cap) — {m.price}/mo
+                    </option>
+                  );
+                })}
+              </select>
+              <div className="absolute right-4 pointer-events-none flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isPending || isSubmitting || !isPasswordValid}
             className="btn-primary w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-white font-display text-base disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}>
-            {isSubmitting ? (
+            {isPending || isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 Submitting…
@@ -567,6 +644,16 @@ function SuccessState({
   const isTenant = type === 'tenant'
   const accentClr = isTenant ? '#3b82f6' : '#10B981'
 
+  useEffect(() => {
+    if (isTenant) {
+      const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3000'
+      const timer = setTimeout(() => {
+        window.location.href = `${portalUrl}/login`
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [isTenant])
+
   return (
     <div className="flex flex-col items-center text-center py-10 px-4">
       {/* Animated checkmark */}
@@ -587,7 +674,7 @@ function SuccessState({
       </h3>
       <p className="text-brand-text max-w-sm leading-relaxed text-sm mb-2">
         {isTenant
-          ? "We've got your request. Connect with your property partner to activate your Gridlett subscription and start getting reliable power."
+          ? "Account created successfully! Redirecting you to the portal to make payment and activate your subscription..."
           : "Welcome to the Gridlett partner network. Our team will reach out within 24 hours to walk you through the provisioning process."}
       </p>
       <p className="text-xs text-brand-muted mb-8">
@@ -775,6 +862,7 @@ export default function SignupSection() {
                   </div>
                   <TenantSignupForm
                     selectedPlanId={selectedPlanId}
+                    setSelectedPlanId={setSelectedPlanId}
                     plans={plans}
                     onSuccess={handleSuccess}
                   />
