@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,13 +9,28 @@ import {
   Wifi, Battery, Tv, Wind, Sun, ChevronRight
 } from 'lucide-react'
 
+interface MappedPlan {
+  id: string
+  name: string
+  watt: string
+  price: string
+  sub: string
+  description: string
+  includes: string[]
+  icon: any
+  color: string
+  badge: string
+}
+
 // ── Zod Schemas ────────────────────────────────────────────────
 
 const tenantSchema = z.object({
   fullName:     z.string().min(2, 'Full name must be at least 2 characters'),
-  contact:      z.string().min(7, 'Enter a valid email or phone number'),
-  propertyCode: z.string().min(4, 'Property code must be at least 4 characters').toUpperCase(),
-  tier:         z.enum(['1', '2', '3']),
+  whatsapp:     z.string().length(11, 'WhatsApp number must be exactly 11 digits'),
+  email:        z.string().email('Enter a valid email address').optional().or(z.literal('')),
+  propertyCode: z.string().length(9, 'Property code must be exactly 9 digits'),
+  otpCode:      z.string().length(6, 'Verification code must be exactly 6 digits'),
+  planId:       z.string().uuid('Invalid plan selected'),
 })
 
 const ownerSchema = z.object({
@@ -28,44 +43,53 @@ const ownerSchema = z.object({
 type TenantForm = z.infer<typeof tenantSchema>
 type OwnerForm  = z.infer<typeof ownerSchema>
 
-// ── Tier data ──────────────────────────────────────────────────
+// Helper to parse plan description split by ||
+const parsePlanDescription = (desc: string) => {
+  if (!desc) return { description: '', includes: [] }
+  const parts = desc.split('||')
+  const mainDesc = parts[0].trim()
+  let includes: string[] = []
+  if (parts.length > 1) {
+    includes = parts[1]
+      .split(',')
+      .map(item => item.trim().replace(/^['"]|['"]$/g, '').trim())
+      .filter(item => item.length > 0)
+  }
+  return { description: mainDesc, includes }
+}
 
-const TIERS = [
-  {
-    id: '1' as const,
-    name: 'Essential',
-    watt: '300W',
-    price: '₦13,000',
+const mapBackendPlan = (plan: any): MappedPlan => {
+  const parsedDesc = parsePlanDescription(plan.description)
+  
+  let Icon = Sun
+  let color = 'blue'
+  let badge = ''
+  
+  if (plan.sortOrder === 1) {
+    Icon = Wifi
+    color = 'emerald'
+  } else if (plan.sortOrder === 2) {
+    Icon = Tv
+    color = 'blue'
+    badge = 'Most popular'
+  } else if (plan.sortOrder === 3) {
+    Icon = Wind
+    color = 'blue'
+  }
+
+  return {
+    id: plan.id,
+    name: plan.name,
+    watt: `${(plan.maxPowerDemandWatts || 0).toLocaleString()}W`,
+    price: `₦${(plan.amount || 0).toLocaleString()}`,
     sub: '/month',
-    description: 'Lighting, phone charging, fan, and a table-top fridge.',
-    includes: ['LED bulbs & devices', 'Phone charging', '1 standing fan', 'Table-top refrigerator allowed'],
-    icon: Wifi,
-    color: 'emerald',
-  },
-  {
-    id: '2' as const,
-    name: 'Standard',
-    watt: '1,200W',
-    price: '₦27,000',
-    sub: '/month',
-    description: 'Full lighting, TV, fans, and an efficient refrigerator.',
-    includes: ['Everything in Essential', '32" LED TV & decoder', 'Efficient refrigerator / freezer'],
-    icon: Tv,
-    color: 'blue',
-    badge: 'Most popular',
-  },
-  {
-    id: '3' as const,
-    name: 'Premium',
-    watt: '2,300W',
-    price: '₦45,000',
-    sub: '/month',
-    description: 'High-draw appliances, water pump, or a single inverter air conditioner.',
-    includes: ['Everything in Standard', '1 Inverter Air Conditioner (1HP)', 'Intermittent washing machine / iron'],
-    icon: Wind,
-    color: 'blue',
-  },
-]
+    description: parsedDesc.description,
+    includes: parsedDesc.includes,
+    icon: Icon,
+    color,
+    badge
+  }
+}
 
 // ── Tier Card ──────────────────────────────────────────────────
 
@@ -74,7 +98,7 @@ function TierCard({
   selected,
   onSelect,
 }: {
-  tier: typeof TIERS[0]
+  tier: MappedPlan
   selected: boolean
   onSelect: () => void
 }) {
@@ -152,10 +176,12 @@ function TierCard({
 // ── Tenant Form ────────────────────────────────────────────────
 
 function TenantSignupForm({
-  selectedTier,
+  selectedPlanId,
+  plans,
   onSuccess,
 }: {
-  selectedTier: '1' | '2' | '3'
+  selectedPlanId: string
+  plans: any[]
   onSuccess: () => void
 }) {
   const {
@@ -166,24 +192,112 @@ function TenantSignupForm({
     formState: { errors, isSubmitting },
   } = useForm<TenantForm>({
     resolver: zodResolver(tenantSchema),
-    defaultValues: { tier: selectedTier },
+    defaultValues: { planId: selectedPlanId },
   })
 
-  // Sync external tier selection into form
-  const currentTier = watch('tier')
-  if (currentTier !== selectedTier) {
-    setValue('tier', selectedTier)
+  // Sync external planId selection into form
+  useEffect(() => {
+    if (selectedPlanId) {
+      setValue('planId', selectedPlanId)
+    }
+  }, [selectedPlanId, setValue])
+
+  const whatsappNumber = watch('whatsapp')
+  const fullName = watch('fullName')
+  const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [otpSent, setOtpSent] = useState(false)
+  const [lastSentNumber, setLastSentNumber] = useState('')
+  const [apiError, setApiError] = useState<string | null>(null)
+
+  // Auto-trigger OTP when whatsapp number hits exactly 11 digits
+  useEffect(() => {
+    const triggerOtp = async () => {
+      if (whatsappNumber && whatsappNumber.length === 11) {
+        if (whatsappNumber === lastSentNumber) {
+          return // Already sent OTP for this number
+        }
+        setIsSendingOtp(true)
+        setApiError(null)
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+          const res = await fetch(`${baseUrl}/v1/Onboarding/Send-Otp`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ phone: whatsappNumber, name: fullName || null }),
+          })
+
+          const data = await res.json().catch(() => ({}))
+          if (!res.ok || data.status === false) {
+            throw new Error(data.message || 'Failed to send verification code. Please check the number.')
+          }
+
+          setOtpSent(true)
+          setLastSentNumber(whatsappNumber)
+        } catch (err: any) {
+          setApiError(err.message)
+          setOtpSent(false)
+        } finally {
+          setIsSendingOtp(false)
+        }
+      } else {
+        if (otpSent && whatsappNumber && whatsappNumber.length < 11) {
+          setOtpSent(false)
+        }
+      }
+    }
+
+    triggerOtp()
+  }, [whatsappNumber, lastSentNumber, otpSent, setValue, fullName])
+
+  // Helper to strip non-digits from the property code
+  const cleanPropertyCode = (code: string): string => {
+    return code.replace(/\D/g, '')
   }
 
   const onSubmit = async (data: TenantForm) => {
-    // Simulate server action
-    await new Promise((r) => setTimeout(r, 1800))
-    console.log('Tenant registration:', data)
-    onSuccess()
+    setApiError(null)
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+      const cleanedPropertyCode = cleanPropertyCode(data.propertyCode)
+      const propertyCodeDigit = parseInt(cleanedPropertyCode, 10)
+      const payload = {
+        fullName: data.fullName,
+        whatsapp: data.whatsapp,
+        email: data.email || null,
+        propertyCode: propertyCodeDigit,
+        planId: data.planId,
+        otpCode: data.otpCode,
+      }
+
+      const res = await fetch(`${baseUrl}/v1/Onboarding/Customer/Self`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const respData = await res.json().catch(() => ({}))
+      if (!res.ok || respData.status === false) {
+        throw new Error(respData.message || 'Failed to submit registration. Please try again.')
+      }
+
+      onSuccess()
+    } catch (err: any) {
+      setApiError(err.message)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {apiError && (
+        <div className="p-4 rounded-xl text-sm bg-red-500/10 border border-red-500/20 text-red-400">
+          {apiError}
+        </div>
+      )}
+
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
           <label className="field-label">Full name</label>
@@ -197,70 +311,135 @@ function TenantSignupForm({
           )}
         </div>
         <div>
-          <label className="field-label">Email or phone</label>
+          <label className="field-label">WhatsApp number</label>
+          <div className="relative">
+            <input
+              {...register('whatsapp', {
+                onChange: (e) => {
+                  const clean = e.target.value.replace(/\D/g, '').slice(0, 11)
+                  setValue('whatsapp', clean)
+                }
+              })}
+              placeholder="e.g. 08012345678"
+              className={`field-input ${errors.whatsapp ? 'error' : ''}`}
+            />
+            {isSendingOtp && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-xs text-blue-400">
+                <Loader2 className="w-4 h-4 animate-spin" />
+              </div>
+            )}
+            {otpSent && !isSendingOtp && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Sent
+              </div>
+            )}
+          </div>
+          {errors.whatsapp && (
+            <p className="text-xs text-red-400 mt-1.5">{errors.whatsapp.message}</p>
+          )}
+          {isSendingOtp && (
+            <p className="text-xs text-blue-400 mt-1.5 animate-pulse">Sending verification code to WhatsApp...</p>
+          )}
+        </div>
+
+        <div>
+          <label className="field-label">Email (optional)</label>
           <input
-            {...register('contact')}
-            placeholder="you@email.com or 0801..."
-            className={`field-input ${errors.contact ? 'error' : ''}`}
+            {...register('email')}
+            placeholder="you@email.com"
+            className={`field-input ${errors.email ? 'error' : ''}`}
           />
-          {errors.contact && (
-            <p className="text-xs text-red-400 mt-1.5">{errors.contact.message}</p>
+          {errors.email && (
+            <p className="text-xs text-red-400 mt-1.5">{errors.email.message}</p>
+          )}
+        </div>
+        <div>
+          <label className="field-label">Property code</label>
+          <input
+            {...register('propertyCode', {
+              onChange: (e) => {
+                const clean = e.target.value.replace(/\D/g, '').slice(0, 9)
+                setValue('propertyCode', clean)
+              }
+            })}
+            placeholder="e.g. 123456789"
+            maxLength={9}
+            className={`field-input font-mono tracking-widest ${errors.propertyCode ? 'error' : ''}`}
+          />
+          <p className="text-xs text-brand-muted mt-1.5">
+            Get this 9-digit code from your property partner or manager.
+          </p>
+          {errors.propertyCode && (
+            <p className="text-xs text-red-400 mt-1">{errors.propertyCode.message}</p>
           )}
         </div>
       </div>
 
-      <div>
-        <label className="field-label">Property code</label>
-        <input
-          {...register('propertyCode')}
-          placeholder="e.g. GRID-LKJ-004"
-          className={`field-input font-mono uppercase tracking-widest ${errors.propertyCode ? 'error' : ''}`}
-        />
-        <p className="text-xs text-brand-muted mt-1.5">
-          Get this code from your property owner or manager.
-        </p>
-        {errors.propertyCode && (
-          <p className="text-xs text-red-400 mt-1">{errors.propertyCode.message}</p>
-        )}
-      </div>
+      {/* Hidden planId field synced from selector */}
+      <input type="hidden" {...register('planId')} />
 
-      {/* Hidden tier field synced from selector */}
-      <input type="hidden" {...register('tier')} />
+      {otpSent && (
+        <>
+          <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <label className="field-label">Verification code</label>
+            <input
+              {...register('otpCode', {
+                onChange: (e) => {
+                  const clean = e.target.value.replace(/\D/g, '').slice(0, 6)
+                  setValue('otpCode', clean)
+                }
+              })}
+              placeholder="Enter 6-digit WhatsApp code"
+              className={`field-input font-mono text-center tracking-widest ${errors.otpCode ? 'error' : ''}`}
+            />
+            {errors.otpCode && (
+              <p className="text-xs text-red-400 mt-1.5">{errors.otpCode.message}</p>
+            )}
+          </div>
 
-      {/* Current tier summary */}
-      <div className="flex items-center gap-3 p-4 rounded-xl"
-        style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)' }}>
-        <Sun className="w-4 h-4 text-blue-400 shrink-0" />
-        <p className="text-sm text-brand-text">
-          Subscribing to{' '}
-          <span className="font-semibold text-blue-400">
-            Tier {selectedTier} — {TIERS.find(t => t.id === selectedTier)?.name}
-          </span>
-          {' '}({TIERS.find(t => t.id === selectedTier)?.watt} cap)
-        </p>
-        <span className="ml-auto text-sm font-bold text-blue-400">
-          {TIERS.find(t => t.id === selectedTier)?.price}
-          <span className="text-xs text-brand-muted font-normal">/mo</span>
-        </span>
-      </div>
+          {/* Current plan summary */}
+          {(() => {
+            const selectedPlan = plans.find(p => p.id === selectedPlanId)
+            if (!selectedPlan) return null
+            const mapped = mapBackendPlan(selectedPlan)
+            return (
+              <div className="flex items-center gap-3 p-4 rounded-xl"
+                style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', animation: 'fadeIn 0.3s ease-out' }}>
+                <Sun className="w-4 h-4 text-blue-400 shrink-0" />
+                <p className="text-sm text-brand-text">
+                  Subscribing to{' '}
+                  <span className="font-semibold text-blue-400">
+                    {mapped.name} Plan
+                  </span>
+                  {' '}({mapped.watt} cap)
+                </p>
+                <span className="ml-auto text-sm font-bold text-blue-400">
+                  {mapped.price}
+                  <span className="text-xs text-brand-muted font-normal">/mo</span>
+                </span>
+              </div>
+            )
+          })()}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="btn-primary w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-white font-display text-base disabled:opacity-60 disabled:cursor-not-allowed"
-        style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}>
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Submitting…
-          </>
-        ) : (
-          <>
-            <Zap className="w-5 h-5" fill="white" />
-            Request power access
-          </>
-        )}
-      </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-white font-display text-base disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Submitting…
+              </>
+            ) : (
+              <>
+                <Zap className="w-5 h-5" fill="white" />
+                Request power access
+              </>
+            )}
+          </button>
+        </>
+      )}
     </form>
   )
 }
@@ -408,7 +587,7 @@ function SuccessState({
       </h3>
       <p className="text-brand-text max-w-sm leading-relaxed text-sm mb-2">
         {isTenant
-          ? "We've got your request. Connect with your property owner to activate your Gridlett subscription and start getting reliable power."
+          ? "We've got your request. Connect with your property partner to activate your Gridlett subscription and start getting reliable power."
           : "Welcome to the Gridlett partner network. Our team will reach out within 24 hours to walk you through the provisioning process."}
       </p>
       <p className="text-xs text-brand-muted mb-8">
@@ -428,15 +607,76 @@ function SuccessState({
   )
 }
 
+// ── Tier Card Skeleton ─────────────────────────────────────────
+
+function TierCardSkeleton() {
+  return (
+    <div
+      className="w-full rounded-2xl p-5 glass-card border animate-pulse min-h-[260px] flex flex-col justify-between"
+      style={{
+        borderColor: 'rgba(30,45,69,0.8)',
+        borderWidth: '2px',
+      }}
+    >
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-slate-800/80" />
+          <div className="space-y-2 flex-1">
+            <div className="h-4 bg-slate-800/80 rounded w-2/3" />
+            <div className="h-3 bg-slate-800/80 rounded w-1/3" />
+          </div>
+        </div>
+        <div className="h-6 bg-slate-800/80 rounded w-1/2 mb-4" />
+        <div className="h-3 bg-slate-800/80 rounded w-5/6 mb-2" />
+        <div className="h-3 bg-slate-800/80 rounded w-2/3" />
+      </div>
+      <div className="space-y-2 mt-4">
+        <div className="h-3 bg-slate-800/80 rounded w-11/12" />
+        <div className="h-3 bg-slate-800/80 rounded w-9/12" />
+      </div>
+    </div>
+  )
+}
+
 // ── Main SignupSection ─────────────────────────────────────────
 
 export default function SignupSection() {
-  const [activeTab, setActiveTab]       = useState<'tenant' | 'owner'>('tenant')
-  const [selectedTier, setSelectedTier] = useState<'1' | '2' | '3'>('2')
-  const [successState, setSuccessState] = useState<null | 'tenant' | 'owner'>(null)
+  const [activeTab, setActiveTab]           = useState<'tenant' | 'owner'>('tenant')
+  const [plans, setPlans]                   = useState<any[]>([])
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('')
+  const [isLoadingPlans, setIsLoadingPlans] = useState<boolean>(true)
+  const [successState, setSuccessState]     = useState<null | 'tenant' | 'owner'>(null)
 
   const handleSuccess = () => setSuccessState(activeTab)
   const handleReset   = () => setSuccessState(null)
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+        const res = await fetch(`${baseUrl}/v1/Plan/Get/System`)
+        const data = await res.json()
+        if (data.status && Array.isArray(data.data)) {
+          const sortedPlans = [...data.data].sort((a: any, b: any) => a.sortOrder - b.sortOrder)
+          setPlans(sortedPlans)
+          
+          // Select standard plan (sortOrder = 2) by default, or fallback to first plan
+          const standardPlan = sortedPlans.find((p: any) => p.sortOrder === 2)
+          if (standardPlan) {
+            setSelectedPlanId(standardPlan.id)
+          } else if (sortedPlans.length > 0) {
+            setSelectedPlanId(sortedPlans[0].id)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch system plans:', err)
+      } finally {
+        setIsLoadingPlans(false)
+      }
+    }
+
+    fetchPlans()
+  }, [])
 
   return (
     <section id="signup" className="relative z-10 py-20 px-6">
@@ -451,20 +691,35 @@ export default function SignupSection() {
             , then sign up
           </h2>
           <p className="mt-4 text-brand-text max-w-lg mx-auto text-sm leading-relaxed">
-            Pick the usage level that fits your needs. Then register as a tenant or property owner below.
+            Pick the usage level that fits your needs. Then register as a tenant or property partner below.
           </p>
         </div>
 
         {/* Tier Selector */}
         <div id="tiers" className="grid md:grid-cols-3 gap-4 mb-12">
-          {TIERS.map((tier) => (
-            <TierCard
-              key={tier.id}
-              tier={tier}
-              selected={selectedTier === tier.id}
-              onSelect={() => setSelectedTier(tier.id)}
-            />
-          ))}
+          {isLoadingPlans ? (
+            <>
+              <TierCardSkeleton />
+              <TierCardSkeleton />
+              <TierCardSkeleton />
+            </>
+          ) : plans.length > 0 ? (
+            plans.map((plan) => {
+              const mapped = mapBackendPlan(plan)
+              return (
+                <TierCard
+                  key={mapped.id}
+                  tier={mapped}
+                  selected={selectedPlanId === mapped.id}
+                  onSelect={() => setSelectedPlanId(mapped.id)}
+                />
+              )
+            })
+          ) : (
+            <div className="col-span-3 text-center py-8 text-brand-muted text-sm glass-card rounded-2xl border border-brand-border/40">
+              No plans found. Please check back later.
+            </div>
+          )}
         </div>
 
         {/* Signup Card */}
@@ -498,7 +753,7 @@ export default function SignupSection() {
                     background: activeTab === 'owner' ? 'rgba(16,185,129,0.05)' : 'transparent',
                   }}>
                   <Building2 className="w-4 h-4" />
-                  I&apos;m a property owner
+                  I&apos;m a property partner
                   {activeTab === 'owner' && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-400 rounded-t-full" />
                   )}
@@ -519,15 +774,15 @@ export default function SignupSection() {
                     </p>
                   </div>
                   <TenantSignupForm
-                    key={selectedTier}
-                    selectedTier={selectedTier}
+                    selectedPlanId={selectedPlanId}
+                    plans={plans}
                     onSuccess={handleSuccess}
                   />
                 </>
               ) : (
                 <>
                   <div className="mb-6">
-                    <h3 className="font-display font-bold text-white text-xl">Property owner registration</h3>
+                    <h3 className="font-display font-bold text-white text-xl">Property partner registration</h3>
                     <p className="text-sm text-brand-muted mt-1">
                       List your property and let Gridlett manage structured energy access for your tenants.
                     </p>

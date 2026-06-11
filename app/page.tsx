@@ -13,8 +13,8 @@ const HOW_IT_WORKS = [
   {
     icon: Building2,
     step: 'A',
-    title: 'Property owner registers',
-    body: 'The landlord or facility manager registers the property and its solar capacity. Gridlett provisions the smart control layer.',
+    title: 'Property partner registers',
+    body: 'The property partner or facility manager registers the property and its solar capacity. Gridlett provisions the smart control layer.',
     color: 'blue',
   },
   {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import LogRocketInit from '../components/LogRocketInit'
 
 export const metadata: Metadata = {
   title: 'Gridlett — Power.. to let',
@@ -24,6 +25,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen bg-brand-black antialiased">
+        <LogRocketInit />
         {children}
       </body>
     </html>

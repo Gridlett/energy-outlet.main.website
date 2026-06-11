@@ -11,15 +11,16 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.1.9",
+    "logrocket": "^12.1.1",
+    "lucide-react": "^0.378.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.4",
-    "@hookform/resolvers": "^3.3.4",
-    "zod": "^3.23.8",
-    "framer-motion": "^11.1.9",
-    "lucide-react": "^0.378.0",
-    "clsx": "^2.1.1"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.14.6",
