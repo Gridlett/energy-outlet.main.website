@@ -179,7 +179,7 @@ export default function HomePage() {
           <a href="#signup" className="hover:text-white transition-colors">Sign up</a>
         </div>
         <div className="flex items-center gap-5">
-          <a href={`${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3000'}/login`}
+          <a href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/login`}
             className="text-sm font-semibold text-brand-muted hover:text-white transition-colors">
             Login
           </a>
