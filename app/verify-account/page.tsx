@@ -123,9 +123,9 @@ function VerifyWhatsAppContent() {
       {/* Navbar */}
       <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-5 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #22c55e)', boxShadow: '0 0 16px rgba(59,130,246,0.4)' }}>
-            <Zap className="w-4 h-4 text-white" fill="white" />
+          <div className="w-8 h-8 rounded-[9px] flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)', boxShadow: '0 0 16px rgba(34,197,94,0.3)' }}>
+            <Zap className="w-4 h-4 text-white" />
           </div>
           <span className="font-display font-bold text-xl text-white tracking-tight">gridlett</span>
         </Link>
@@ -221,7 +221,7 @@ function VerifyWhatsAppContent() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-brand-border/50 py-6 px-6 w-full max-w-5xl mx-auto flex items-center justify-between">
         <span className="text-xs text-brand-muted">© {new Date().getFullYear()} Gridlett.</span>
-        <span className="text-xs text-brand-muted">Lagos, Nigeria</span>
+        <span className="text-xs text-brand-muted">Operating in Nigeria</span>
       </footer>
     </main>
   )
