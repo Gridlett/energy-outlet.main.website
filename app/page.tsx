@@ -1,9 +1,11 @@
 import { Zap, Shield, BarChart3, Users, CheckCircle2, Building2 } from 'lucide-react'
 import SignupSection from '@/components/SignupSection'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 // ── Static data ────────────────────────────────────────────────
 const STATS = [
-  { value: '99.2%', label: 'Uptime reliability' },
+  { value: '99.9%', label: 'Uptime reliability' },
   { value: '3 tiers', label: 'Usage plans' },
   { value: '₦0', label: 'Upfront cost' },
   { value: '24/7', label: 'Remote monitoring' },
@@ -165,38 +167,14 @@ export default function HomePage() {
       <div className="fixed bottom-1/4 right-0 w-80 h-80 orb-emerald pointer-events-none translate-x-1/3" />
 
       {/* ── NAVBAR ── */}
-      <nav className="relative z-50 flex items-center justify-between px-6 md:px-12 py-5 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #22c55e)', boxShadow: '0 0 16px rgba(59,130,246,0.4)' }}>
-            <Zap className="w-4 h-4 text-white" fill="white" />
-          </div>
-          <span className="font-display font-bold text-xl text-white tracking-tight">gridlett</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm text-brand-muted font-medium">
-          <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
-          <a href="#tiers" className="hover:text-white transition-colors">Tiers</a>
-          <a href="#signup" className="hover:text-white transition-colors">Sign up</a>
-        </div>
-        <div className="flex items-center gap-5">
-          <a href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/login`}
-            className="text-sm font-semibold text-brand-muted hover:text-white transition-colors">
-            Login
-          </a>
-          <a href="#signup"
-            className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)' }}>
-            Get access
-          </a>
-        </div>
-      </nav>
+      <Header />
 
       {/* ── HERO ── */}
-      <section className="relative z-10 pt-12 pb-20 px-6 text-center max-w-4xl mx-auto">
+      <section className="relative z-10 pt-32 pb-20 px-6 text-center max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-8"
           style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', color: '#60a5fa' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-          Now available · Lagos & beyond
+          Now available · Across Nigeria
         </div>
 
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight">
@@ -247,22 +225,7 @@ export default function HomePage() {
       <SignupSection />
 
       {/* ── FOOTER ── */}
-      <footer className="relative z-10 border-t border-brand-border/50 py-10 px-6 mt-8">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #22c55e)' }}>
-              <Zap className="w-3 h-3 text-white" fill="white" />
-            </div>
-            <span className="font-display font-bold text-white">gridlett</span>
-          </div>
-          <p className="text-xs text-brand-muted">© {new Date().getFullYear()} Gridlett. Power.. to let.</p>
-          <div className="flex gap-5 text-xs text-brand-muted">
-            <a href="mailto:operations@gridlett.com" className="hover:text-blue-400 transition-colors">operations@gridlett.com</a>
-            <span>gridlett.com</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   )
 }

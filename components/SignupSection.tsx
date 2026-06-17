@@ -281,6 +281,7 @@ function TenantSignupForm({
                 setValue('clusterCode', formatted)
               }
             })}
+            id="cluster-code-input"
             placeholder="e.g. 123-456-789"
             maxLength={11}
             className={`field-input font-mono tracking-widest ${errors.clusterCode ? 'error' : ''}`}
@@ -554,7 +555,17 @@ export default function SignupSection() {
                   key={mapped.id}
                   tier={mapped}
                   selected={selectedPlanId === mapped.id}
-                  onSelect={() => setSelectedPlanId(mapped.id)}
+                  onSelect={() => {
+                    setSelectedPlanId(mapped.id)
+                    const signupCard = document.getElementById('signup-card')
+                    if (signupCard) {
+                      signupCard.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                      setTimeout(() => {
+                        const input = document.getElementById('cluster-code-input')
+                        if (input) input.focus()
+                      }, 500)
+                    }
+                  }}
                 />
               )
             })
@@ -566,14 +577,14 @@ export default function SignupSection() {
         </div>
 
         {/* Signup Card */}
-        <div className="max-w-2xl mx-auto">
+        <div id="signup-card" className="max-w-2xl mx-auto">
           <div className="glass-card rounded-3xl overflow-hidden"
             style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.4)' }}>
 
             {/* Form body */}
             <div className="p-7 md:p-8">
               <div className="mb-6">
-                <h3 className="font-display font-bold text-white text-xl">Tenant sign up</h3>
+                <h3 className="font-display font-bold text-white text-xl">Sign Up</h3>
                 <p className="text-sm text-brand-muted mt-1">
                   Join an existing Gridlett-enabled property using your property code.
                 </p>
