@@ -1,10 +1,16 @@
-'use client'
-
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import FAQSection from '@/components/FAQSection'
-import { motion } from 'framer-motion'
-import { HelpCircle } from 'lucide-react'
+import FAQClient from './faq-client'
+import PageWrapper from '@/components/PageWrapper'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions',
+  description: 'Find answers to common questions about Gridlett smart load limiting, solar subscription plans, billing, and setup for subscribers and hosts.',
+  alternates: {
+    canonical: '/faq',
+  },
+}
 
 export default function FAQPage() {
   return (
@@ -19,16 +25,13 @@ export default function FAQPage() {
       {/* Header */}
       <Header />
 
-      {/* Main Content Container */}
-      <div className="relative z-10 flex-1 pt-32 pb-16">
-        <FAQSection />
+      {/* Main Content Container wrapped in Client Transition */}
+      <PageWrapper>
+        <FAQClient />
         
         {/* Support Callout */}
         <div className="max-w-4xl mx-auto px-6 mb-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <div 
             className="glass-card rounded-2xl p-6 text-center border border-brand-border/40"
             style={{ background: 'linear-gradient(135deg, rgba(30, 45, 69, 0.2), rgba(8, 13, 26, 0.4))' }}
           >
@@ -42,9 +45,9 @@ export default function FAQPage() {
             >
               Get in touch with us →
             </a>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      </PageWrapper>
 
       {/* Footer */}
       <Footer />

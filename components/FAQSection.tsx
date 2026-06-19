@@ -63,12 +63,24 @@ const FAQS = [
     answer: 'Our smart control hardware is installed alongside the solar system. It monitors each unit’s real-time electricity draw. If your usage exceeds your tier capacity (e.g. running heavy appliances), the controller temporarily cuts power to your unit, protecting the battery bank and inverter from blowing. Power is restored automatically once the load is reduced.',
   },
   {
+    question: 'What happens during an internet outage?',
+    answer: 'Gridlett smart controllers are built to function completely offline. If the internet goes down, the controllers continue to regulate power based on your last active subscription limit. All energy usage data is stored locally and syncs back to the cloud as soon as connection is restored, ensuring no billing data is lost.',
+  },
+  {
     question: 'How does the ₦0 upfront cost installation work?',
     answer: 'Gridlett partners with property owners and solar providers. We supply and set up the solar panels, batteries, and smart control layer without demanding upfront equipment costs. Residents pay only for their monthly energy subscription.',
   },
   {
     question: 'Can I change my subscription tier?',
     answer: 'Yes! You can upgrade or downgrade your tier through the resident portal at any time. Changes will take effect in your next billing cycle.',
+  },
+  {
+    question: 'Can I add Gridlett to my existing solar inverter setup?',
+    answer: 'Absolutely. For landlords and property developers who already have solar panels and batteries installed, our "Smart Retrofit" plan allows you to just buy the Gridlett Smart Controllers. This prevents tenant overloads and automates billing without needing to buy a whole new solar system.',
+  },
+  {
+    question: 'What happens if I try to use an appliance larger than my plan limit?',
+    answer: 'If you exceed your plan\'s wattage limit (for example, trying to turn on a 1.5HP AC on the Essential 500W plan), the smart controller will automatically pause your power to protect the grid. You will receive a notification on WhatsApp or via the portal. Simply turn off the heavy appliance, and your power will auto-restore in 5 minutes.',
   },
   {
     question: 'What is a "Cluster Code"?',
