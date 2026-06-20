@@ -7,15 +7,15 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   const socialLinks = [
-    { icon: Twitter, href: 'https://twitter.com/gridlett', label: 'Twitter' },
-    { icon: Linkedin, href: 'https://linkedin.com/company/gridlett', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://instagram.com/gridlett', label: 'Instagram' },
+    { icon: Twitter, href: '#', label: 'X' },
+    { icon: Linkedin, href: '#', label: 'LinkedIn' },
+    { icon: Instagram, href: '#', label: 'Instagram' },
   ]
 
   const productLinks = [
     { label: 'How it Works', href: '/#how-it-works' },
-    { label: 'Pricing Tiers', href: '/#signup' },
-    { label: 'Smart Metering', href: '/#how-it-works' },
+    { label: 'Pricing Plans', href: '/pricing' },
+    { label: 'For Grid Hosts', href: '/pricing?tab=hosts' },
   ]
 
   const companyLinks = [

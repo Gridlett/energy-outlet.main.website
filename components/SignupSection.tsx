@@ -531,7 +531,7 @@ export default function SignupSection() {
           <p className="text-xs font-semibold tracking-widest text-emerald-400 uppercase mb-3">Get started</p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
             Choose your{' '}
-            <span className="text-gradient-blue">power tier</span>
+            <span className="text-gradient-blue">energy tier</span>
             , then sign up
           </h2>
           <p className="mt-4 text-brand-text max-w-lg mx-auto text-sm leading-relaxed">

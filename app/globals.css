@@ -180,3 +180,38 @@ body {
 .btn-primary:active {
   transform: translateY(0px);
 }
+
+/* Ambient breathing animation for background orbs */
+@keyframes orb-breath-1 {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1) translate(0px, 0px);
+    opacity: 0.9;
+  }
+  33% {
+    transform: translate(-50%, -50%) scale(1.06) translate(12px, -18px);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(-50%, -50%) scale(0.94) translate(-12px, 12px);
+    opacity: 0.8;
+  }
+}
+
+@keyframes orb-breath-2 {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1) translate(0px, 0px);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1) translate(-18px, 18px);
+    opacity: 1;
+  }
+}
+
+.animate-orb-breath-1 {
+  animation: orb-breath-1 14s ease-in-out infinite;
+}
+
+.animate-orb-breath-2 {
+  animation: orb-breath-2 18s ease-in-out infinite;
+}
