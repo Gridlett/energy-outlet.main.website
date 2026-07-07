@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: 'Learn about Gridlett\'s mission to build structured, software-driven electricity access that delivers clean, reliable solar energy to homes and businesses across Nigeria.',
+  description: 'Learn about Energy-Outlet\'s mission to build structured, compound-level solar microgrids that deliver clean, reliable solar energy to hostels and apartments across Nigeria.',
   alternates: {
     canonical: '/about',
   },
@@ -69,7 +69,7 @@ export default function AboutPage() {
               <span className="text-gradient-emerald">sustainably</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
-              Gridlett is dedicated to building structured, software-driven electricity access that delivers clean, reliable solar energy to homes and businesses across Nigeria.
+              Energy-Outlet, a Gridlett product, is dedicated to building structured, localized solar microgrids that deliver clean, reliable solar energy to hostels and residential apartments across Nigeria.
             </p>
           </section>
 
@@ -88,7 +88,7 @@ export default function AboutPage() {
                   When complexes transition to shared solar systems, a common headache arises: without structure, one unit turning on multiple high-load devices can drain the shared battery bank, overloading the inverter and leaving the entire building in darkness.
                 </p>
                 <p>
-                  This leads to constant friction, disputes over diesel and solar bill-splitting, and unstable power grids. <strong className="text-white font-bold">Gridlett was built to change that.</strong>
+                  This leads to constant friction, disputes over diesel and solar bill-splitting, and unstable power grids. <strong className="text-white font-bold">Energy-Outlet was built to change that.</strong>
                 </p>
               </div>
             </div>
@@ -100,10 +100,10 @@ export default function AboutPage() {
               <div className="absolute top-0 right-0 w-32 h-32 orb-blue opacity-40 pointer-events-none" />
               <h3 className="font-display font-semibold text-white text-xl mb-4 flex items-center gap-2">
                 <Zap className="w-5 h-5 text-emerald-400" fill="#10b98144" />
-                The Gridlett Engine
+                The Energy-Outlet Model
               </h3>
               <p className="text-sm leading-relaxed mb-6 text-brand-text">
-                We developed a smart control layer combined with an automated subscription engine. Instead of unmonitored power sharing, Gridlett provisions clean solar energy under strict structure:
+                We size solar capacity to match committed resident demand. Instead of unmonitored power sharing, Energy-Outlet provisions clean solar energy under strict structure:
               </p>
               <ul className="space-y-3.5 text-sm">
                 <li className="flex items-start gap-2.5">
@@ -112,11 +112,11 @@ export default function AboutPage() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0" />
-                  <span><strong className="text-white font-bold">Fixed Subscriptions</strong>: Subscribers select a plan tier that fits their budget. No surprise bills.</span>
+                  <span><strong className="text-white font-bold">Fixed Subscriptions</strong>: Residents select a plain-language plan tier that fits their budget. No surprise bills.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 shrink-0" />
-                  <span><strong className="text-white font-bold">Smart Control</strong>: Real-time telemetry keeps the microgrid balanced and stable 24/7.</span>
+                  <span><strong className="text-white font-bold">Smart Telemetry</strong>: Real-time metering keeps the microgrid balanced and stable 24/7.</span>
                 </li>
               </ul>
             </div>
@@ -185,7 +185,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/#plans"
+                href="/c/lugbe-estate-wing-c"
                 className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-white font-bold text-base font-display"
                 style={{
                   background: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
@@ -196,11 +196,11 @@ export default function AboutPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="mailto:operations@gridlett.com"
+                href="mailto:care@energy-outlet.space"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base text-brand-text hover:text-white transition-colors"
                 style={{ border: '1px solid #1E2D45' }}
               >
-                Contact Operations
+                Contact Support
               </a>
             </div>
           </section>

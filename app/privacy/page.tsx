@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Read the Gridlett Privacy Policy. Learn how we handle your energy consumption telemetry, WhatsApp notifications, and account verification data.',
+  description: 'Read the Energy-Outlet Privacy Policy. Learn how we handle your energy consumption telemetry, WhatsApp notifications, and account verification data.',
   alternates: {
     canonical: '/privacy',
   },
@@ -87,10 +87,10 @@ export default function PrivacyPage() {
                 3. Data Retention & Sharing
               </h2>
               <p>
-                Gridlett does not rent, sell, or disclose your energy metrics or personal data to third-party advertising brokers. 
+                Energy-Outlet does not rent, sell, or disclose your energy metrics or personal data to third-party advertising brokers. 
               </p>
               <p>
-                We share aggregated load data with your property partner (landlord or facility manager) only as necessary to resolve billing queries or hardware balancing issues. Gridlett retains billing and diagnostic data for the duration of your contract, plus a standard archiving period to comply with Nigerian corporate and financial reporting regulations.
+                We share aggregated load data with your property partner (landlord or facility manager) only as necessary to resolve billing queries or hardware balancing issues. Energy-Outlet retains billing and diagnostic data for the duration of your contract, plus a standard archiving period to comply with Nigerian corporate and financial reporting regulations.
               </p>
             </section>
 
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
                 5. Your Privacy Choices
               </h2>
               <p>
-                You can access, modify, or download your historical usage reports and subscription details at any time through the customer portal. If you move out or cancel your subscription, you may request complete account erasure by writing to operations@gridlett.com.
+                You can access, modify, or download your historical usage reports and subscription details at any time through the customer portal. If you move out or cancel your subscription, you may request complete account erasure by writing to care@energy-outlet.space.
               </p>
             </section>
           </div>

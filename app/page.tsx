@@ -1,45 +1,51 @@
 import { Zap, Shield, BarChart3, Users, CheckCircle2, Building2, ArrowRight } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import HomePlans from '@/components/HomePlans'
 import Link from 'next/link'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Reliable Solar Subscriptions',
-  description: 'Gridlett delivers structured electricity access in Nigeria. Get reliable solar power on a fixed monthly subscription. No upfront costs, no overload blowouts, no noise.',
+  title: 'Energy-Outlet - Reliable Solar Subscriptions',
+  description: 'Energy-Outlet installs solar systems inside apartments and hostels across Nigeria. Residents pick the power they need. Investors fund the capacity.',
   alternates: {
-    canonical: 'https://gridlett.com',
+    canonical: 'https://energy-outlet.com',
   },
 }
 
 const HOW_IT_WORKS = [
   {
     icon: Building2,
-    step: 'A',
-    title: 'Verify your property',
-    body: 'Enter your estate or building code during registration to link your apartment to our active microgrid.',
-    color: 'blue',
-  },
-  {
-    icon: Users,
-    step: 'B',
-    title: 'Choose a power plan',
-    body: 'Pick the subscription tier that matches your daily appliances (Essential, Standard, or Premium). No hidden fees.',
+    step: '01',
+    title: 'Survey the site',
+    body: 'We walk the property with the landlord and map it as a cluster — one compound, one shared solar install, one line.',
     color: 'emerald',
   },
   {
     icon: Shield,
-    step: 'C',
-    title: 'Activate your connection',
-    body: 'Register online to activate your switch. Our smart controllers automatically keep usage within your selected tier limits.',
+    step: '02',
+    title: 'Secure the space',
+    body: 'We agree terms with the landlord and pay an agreed fee to install and operate on the property.',
     color: 'blue',
   },
   {
+    icon: Users,
+    step: '03',
+    title: 'Residents pick their tier',
+    body: 'No one needs to know their wattage. They tell us what they want powered, and we classify the tier.',
+    color: 'emerald',
+  },
+  {
     icon: BarChart3,
-    step: 'D',
-    title: 'Enjoy constant power',
-    body: 'Get uninterrupted, clean electricity without noisy generators, fuel logistics, or surprise shared bills.',
+    step: '04',
+    title: 'We size the system',
+    body: 'Every tier maps to a wattage. We sum the whole cluster\'s real demand and size the solar capacity to match.',
+    color: 'blue',
+  },
+  {
+    icon: CheckCircle2,
+    step: '05',
+    title: 'Investors fund the capacity',
+    body: 'Surveyed, sized clusters go live for funding — capacity required, financing needed, and a minimum ticket, all listed before anyone commits.',
     color: 'emerald',
   },
 ]
@@ -70,13 +76,14 @@ function HowItWorks() {
     <section className="py-24 px-6 border-t border-brand-border/30" id="how-it-works">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">How it works</p>
+          <p className="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">The process</p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight">
-            Reliable power,{' '}
-            <span className="text-gradient-emerald">made simple</span>
+            One compound.{' '}
+            <span className="text-gradient-emerald">One survey.</span>{' '}
+            One solar install.
           </h2>
           <p className="mt-4 text-brand-text max-w-xl mx-auto leading-relaxed text-sm md:text-base">
-            We connect your home directly to clean, uninterrupted solar electricity. No noisy generators, no maintenance hassles, just power you can count on.
+            A cluster is a mapped location — a single property where we install solar and meter every resident's demand individually.
           </p>
         </div>
 
@@ -121,10 +128,10 @@ export default function HomePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    'name': 'Gridlett',
-    'url': 'https://gridlett.com',
-    'logo': 'https://gridlett.com/icon.svg',
-    'description': 'Gridlett is a structured electricity access system delivering reliable, clean solar power to homes and businesses in Nigeria while controlling fair usage automatically.',
+    'name': 'Energy-Outlet',
+    'url': 'https://energy-outlet.com',
+    'logo': 'https://energy-outlet.com/icon.svg',
+    'description': 'Energy-Outlet installs solar systems inside apartments and hostels across Nigeria.',
     'sameAs': [
       'https://x.com',
       'https://linkedin.com',
@@ -132,7 +139,7 @@ export default function HomePage() {
     ],
     'contactPoint': {
       '@type': 'ContactPoint',
-      'email': 'operations@gridlett.com',
+      'email': 'care@energy-outlet.space',
       'contactType': 'operations support',
       'areaServed': 'NG',
       'availableLanguage': 'English'
@@ -197,7 +204,7 @@ export default function HomePage() {
             style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#34d399' }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Managed solar infrastructure &middot; Nigeria
+            Managed solar clusters &middot; Nigeria
           </div>
         </div>
 
@@ -205,39 +212,47 @@ export default function HomePage() {
         <div className="text-center mb-5">
           <h1 className="font-display tracking-tight leading-[1.1]">
             <span className="block text-4xl md:text-6xl lg:text-7xl font-extrabold text-white">
-              Power <span className="text-gradient-blue">without limits.</span>
+              The <span className="text-gradient-emerald">grid flickers.</span>
             </span>
             <span className="block text-4xl md:text-6xl lg:text-7xl mt-1 text-white">
-              <span className="font-light text-slate-400">Usage </span>
-              <span className="font-extrabold text-gradient-emerald">with structure.</span>
-            </span>
-            <span className="block text-2xl md:text-3xl lg:text-4xl mt-2 text-slate-400 font-semibold">
-              For every shared building.
+              Your <span className="text-gradient-blue">cluster won't.</span>
             </span>
           </h1>
         </div>
 
         {/* Subtext */}
-        <p className="text-center text-base md:text-lg text-brand-text max-w-xl mx-auto leading-relaxed mb-12">
-          Gridlett delivers reliable, 24/7 solar electricity to residents and tenants on a fixed monthly subscription. No upfront hardware costs, no generator noise, and no surprise shared bills.
+        <p className="text-center text-base md:text-xl text-brand-text max-w-4xl mx-auto leading-relaxed mb-16">
+          Energy-Outlet installs solar systems inside apartments and hostels across Nigeria. Residents pick the power they need. Investors fund the capacity. Nobody waits on PHCN.
         </p>
+
+        {/* Audience Write-ups (Instead of the toggle/cards) */}
+        <div className="flex flex-col md:flex-row justify-center items-center max-w-5xl mx-auto w-full mb-16">
+          <div className="text-center md:text-right px-6 flex-1">
+            <h3 className="text-2xl font-bold text-blue-400 mb-2">Fund solar capacity, earn from monthly plans</h3>
+            <p className="text-base text-brand-text">Every cluster is sized before it's listed for funding.</p>
+          </div>
+          
+          <div className="hidden md:block w-[1px] h-20 bg-brand-border/50 mx-8"></div>
+          
+          <div className="text-center md:text-left px-6 flex-1">
+            <h3 className="text-2xl font-bold text-emerald-400 mb-2">Have an invite from your landlord or caretaker?</h3>
+            <p className="text-base text-brand-text">Pick your tier, sign up, and power on.</p>
+          </div>
+        </div>
 
         {/* CTA Buttons */}
         <div className="flex justify-center max-w-xs mx-auto">
           <Link
-            href="#plans"
+            href="/invest"
             className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold text-sm font-display text-white transition-transform hover:scale-[1.02]"
             style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', boxShadow: '0 4px 20px rgba(59,130,246,0.25)' }}
           >
             <Zap className="w-4 h-4 fill-white" />
-            Get started
+            View clusters
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
-
-      {/* ── PLANS ── */}
-      <HomePlans />
 
       {/* ── HOW IT WORKS ── */}
       <HowItWorks />

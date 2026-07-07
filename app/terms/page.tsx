@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Read the Gridlett Terms of Service. Understand monthly subscriptions, capacity limits, automated load limiting, and hardware ownership terms.',
+  description: 'Read the Energy-Outlet Terms of Service. Understand monthly subscriptions, capacity limits, automated load limiting, and hardware ownership terms.',
   alternates: {
     canonical: '/terms',
   },
@@ -54,7 +54,7 @@ export default function TermsPage() {
                 <span className="text-blue-400">1.</span> Acceptance of Agreement
               </h2>
               <p>
-                By subscribing to or using any electricity grid managed by Gridlett ("the Service"), you agree to be bound by these Terms of Service. If you are entering into this agreement on behalf of a residential household or commercial tenant, you warrant that you have authority to bind that household or business entity to these terms.
+                By subscribing to or using any electricity grid managed by Energy-Outlet, a Gridlett product ("the Service"), you agree to be bound by these Terms of Service. If you are entering into this agreement on behalf of a residential household or commercial tenant, you warrant that you have authority to bind that household or business entity to these terms.
               </p>
             </section>
 
