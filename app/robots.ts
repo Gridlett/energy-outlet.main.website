@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/verify-account', '/api/'],
+      disallow: ['/api/'],
     },
-    sitemap: 'https://gridlett.com/sitemap.xml',
+    sitemap: 'https://energy-outlet.space/sitemap.xml',
   }
 }

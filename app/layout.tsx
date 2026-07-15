@@ -4,26 +4,26 @@ import LogRocketInit from '../components/LogRocketInit'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Gridlett — Power.. to let | Smart Solar Subscriptions',
-    template: '%s | Gridlett',
+    default: 'Energy Outlet — Demand-First Power Infrastructure',
+    template: '%s | Energy Outlet',
   },
-  description: 'Gridlett is a structured electricity access system that delivers reliable, clean solar power to homes and businesses in Nigeria while controlling fair usage automatically.',
-  keywords: 'solar power, electricity access, Nigeria, energy, off-grid, subscription power, smart load limiting, smart metering, pre-paid solar, microgrid',
-  metadataBase: new URL('https://gridlett.com'),
+  description: 'Energy Outlet converts concentrated energy demand into reliable, clean on-site solar power grids for complexes and blocks in Nigeria.',
+  keywords: 'solar power, energy outlet, Nigeria, energy, off-grid, subscription power, smart load limiting, smart metering, pre-paid solar, microgrid',
+  metadataBase: new URL('https://energy-outlet.space'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Gridlett — Power.. to let | Smart Solar Subscriptions',
+    title: 'Energy Outlet — Demand-First Power Infrastructure',
     description: 'Reliable solar electricity on a fixed monthly plan. No upfront costs. No overloading. Just clean power.',
-    url: 'https://gridlett.com',
-    siteName: 'Gridlett',
+    url: 'https://energy-outlet.space',
+    siteName: 'Energy Outlet',
     images: [
       {
         url: '/icon.svg',
         width: 512,
         height: 512,
-        alt: 'Gridlett Icon',
+        alt: 'Energy Outlet Icon',
       },
     ],
     locale: 'en_NG',
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Gridlett — Power.. to let | Smart Solar Subscriptions',
+    title: 'Energy Outlet — Demand-First Power Infrastructure',
     description: 'Reliable solar electricity on a fixed monthly plan. No upfront costs. No overloading. Just clean power.',
     images: ['/icon.svg'],
-    creator: '@gridlett',
+    creator: '@energy_outlet',
   },
   robots: {
     index: true,

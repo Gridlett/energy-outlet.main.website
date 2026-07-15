@@ -1,18 +1,16 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://gridlett.com'
+  const baseUrl = 'https://energy-outlet.space'
   const changeFrequency = 'weekly' as const
 
   const routes = [
     '',
     '/about',
-    '/careers',
     '/contact',
+    '/invest',
+    '/lease-to-own',
     '/faq',
-    '/pricing',
-    '/privacy',
-    '/terms',
   ]
 
   return routes.map((route) => ({

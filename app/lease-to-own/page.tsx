@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getClusters, Cluster } from '@/lib/db';
 
 interface InvestableItem {
   slug: string;
@@ -13,10 +12,52 @@ interface InvestableItem {
   capacityRequired: string;
   financingRequired: number;
   fundingProgress: number;
+  isLeaseToOwn?: boolean;
+  monthlyLease?: number;
+  termMonths?: number;
 }
 
-export default function InvestPage() {
-  const [clusters, setClusters] = useState<InvestableItem[]>([]);
+const LEASE_TO_OWN_ITEMS: InvestableItem[] = [
+  {
+    slug: 'lekki-family-duplex',
+    name: 'Lekki Family Duplex',
+    location: 'Lekki, Lagos',
+    cityState: 'Lekki · Lagos',
+    capacityRequired: '3.5 kW',
+    financingRequired: 2800000,
+    fundingProgress: 75,
+    isLeaseToOwn: true,
+    monthlyLease: 85000,
+    termMonths: 36,
+  },
+  {
+    slug: 'surulere-salon-shop',
+    name: 'Surulere Salon & Shop',
+    location: 'Surulere, Lagos',
+    cityState: 'Surulere · Lagos',
+    capacityRequired: '2.0 kW',
+    financingRequired: 1600000,
+    fundingProgress: 40,
+    isLeaseToOwn: true,
+    monthlyLease: 55000,
+    termMonths: 24,
+  },
+  {
+    slug: 'gwarinpa-office-space',
+    name: 'Gwarinpa Office Space',
+    location: 'Gwarinpa, Abuja',
+    cityState: 'Gwarinpa · Abuja',
+    capacityRequired: '5.0 kW',
+    financingRequired: 4200000,
+    fundingProgress: 90,
+    isLeaseToOwn: true,
+    monthlyLease: 120000,
+    termMonths: 36,
+  }
+];
+
+export default function LeaseToOwnPage() {
+  const [leaseItems, setLeaseItems] = useState<InvestableItem[]>(LEASE_TO_OWN_ITEMS);
   const [selectedItem, setSelectedItem] = useState<InvestableItem | null>(null);
   const [investorName, setInvestorName] = useState('');
   const [investorEmail, setInvestorEmail] = useState('');
@@ -24,20 +65,6 @@ export default function InvestPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    // Initial fetch from db helper, mapping to InvestableItem
-    const dbClusters = getClusters().map(c => ({
-      slug: c.slug,
-      name: c.name,
-      location: c.location,
-      cityState: c.cityState,
-      capacityRequired: c.capacityRequired,
-      financingRequired: c.financingRequired,
-      fundingProgress: c.fundingProgress
-    }));
-    setClusters(dbClusters);
-  }, []);
 
   const handleOpenInvest = (item: InvestableItem, e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,8 +112,8 @@ export default function InvestPage() {
       if (selectedItem) {
         const additionalPercentage = Math.round((amount / selectedItem.financingRequired) * 100);
         
-        setClusters(prevClusters => 
-          prevClusters.map(c => {
+        setLeaseItems(prev =>
+          prev.map(c => {
             if (c.slug === selectedItem.slug) {
               const updatedProgress = Math.min(100, c.fundingProgress + additionalPercentage);
               return { ...c, fundingProgress: updatedProgress };
@@ -119,23 +146,23 @@ export default function InvestPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             <span className="text-primary text-xs font-medium tracking-widest uppercase"
               style={{ fontFamily: "monospace" }}>
-              For Investors & Partners
+              Lease-to-Own Financing
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 max-w-4xl mx-auto"
             style={{ fontFamily: "Sora, sans-serif" }}>
-            Fund clean energy. <span className="text-primary">Earn steady returns.</span>
+            Fund Lease-to-Own. <span className="text-primary">Steady repayments.</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-            Every project listed is pre-surveyed: resident demand is confirmed, space contracts are signed, and systems are custom-sized. You fund the hardware, we manage operations.
+            Fund individual solar systems installed at certified residential duplexes and commercial shops. Residents repay over fixed lease terms until they own the hardware.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
               { val: "₦200k", label: "Minimum ticket" },
-              { val: `${clusters.length}`, label: "Clusters live" },
-              { val: "100%", label: "Pre-surveyed sites" },
-              { val: "Monthly", label: "Repayments & billing" },
+              { val: `${leaseItems.length}`, label: "Lease items live" },
+              { val: "100%", label: "Verified properties" },
+              { val: "Fixed Term", label: "Lease contracts" },
             ].map(({ val, label }) => (
               <div key={label} className="border border-border bg-card/40 p-6 rounded-xl text-center backdrop-blur-sm">
                 <div className="text-2xl md:text-3xl font-bold text-primary mb-1" style={{ fontFamily: "Sora, sans-serif" }}>
@@ -153,31 +180,39 @@ export default function InvestPage() {
           <div>
             <div className="text-center mb-12">
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3" style={{ fontFamily: "Sora, sans-serif" }}>
-                Shared Subscription Clusters
+                Lease-to-Own Solar Systems
               </h2>
               <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
-                Community installations in student hostels and residential blocks where residents pay monthly power subscription fees.
+                Individual properties where residents or businesses lease solar systems with pre-set terms of 24 to 36 months before gaining full ownership.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {clusters.map((cluster) => (
-                <div key={cluster.slug} className="border border-border bg-card/60 backdrop-blur rounded-xl p-8 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group">
+              {leaseItems.map((item) => (
+                <div key={item.slug} className="border border-border bg-card/60 backdrop-blur rounded-xl p-8 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group">
                   <div>
                     <div className="text-xs text-primary font-semibold mb-2" style={{ fontFamily: "monospace" }}>
-                      {cluster.cityState}
+                      {item.cityState}
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "Sora, sans-serif" }}>
-                      {cluster.name}
+                      {item.name}
                     </h3>
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">Capacity Required</span>
-                        <span className="font-semibold text-foreground">{cluster.capacityRequired}</span>
+                        <span className="text-muted-foreground">System Size</span>
+                        <span className="font-semibold text-foreground">{item.capacityRequired}</span>
                       </div>
                       <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">Financing Needed</span>
-                        <span className="font-semibold text-foreground">₦{cluster.financingRequired.toLocaleString()}</span>
+                        <span className="text-muted-foreground">Total Cost</span>
+                        <span className="font-semibold text-foreground">₦{item.financingRequired.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
+                        <span className="text-muted-foreground">Monthly Lease</span>
+                        <span className="font-semibold text-foreground">₦{item.monthlyLease?.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
+                        <span className="text-muted-foreground">Lease Term</span>
+                        <span className="font-semibold text-foreground">{item.termMonths} Months</span>
                       </div>
                     </div>
                   </div>
@@ -186,22 +221,22 @@ export default function InvestPage() {
                     <div className="mb-4">
                       <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                         <span>Funding Progress</span>
-                        <span className="text-primary font-bold">{cluster.fundingProgress}%</span>
+                        <span className="text-primary font-bold">{item.fundingProgress}%</span>
                       </div>
                       <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${cluster.fundingProgress}%` }}></div>
+                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${item.fundingProgress}%` }}></div>
                       </div>
                     </div>
-                    
+
                     <div className="text-xs text-muted-foreground mb-6 text-center" style={{ fontFamily: "monospace" }}>
                       Min ticket: <span className="text-foreground font-semibold">₦200,000</span>
                     </div>
 
                     <button
-                      onClick={(e) => handleOpenInvest(cluster, e)}
+                      onClick={(e) => handleOpenInvest(item, e)}
                       className="w-full py-3.5 bg-primary text-primary-foreground font-semibold rounded hover:brightness-110 transition-all duration-200"
                     >
-                      Invest in Cluster
+                      Fund Lease Option
                     </button>
                   </div>
                 </div>
@@ -247,7 +282,7 @@ export default function InvestPage() {
               {selectedItem.cityState}
             </span>
             <h3 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "Sora, sans-serif" }}>
-              Invest in Cluster: {selectedItem.name}
+              Fund Lease: {selectedItem.name}
             </h3>
 
             {successMessage ? (

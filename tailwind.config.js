@@ -7,6 +7,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        background: '#070C14',
+        foreground: '#D8EAF5',
+        card: {
+          DEFAULT: '#0C1422',
+          foreground: '#D8EAF5',
+        },
+        popover: {
+          DEFAULT: '#0C1422',
+          foreground: '#D8EAF5',
+        },
+        primary: {
+          DEFAULT: '#00E5A0',
+          foreground: '#070C14',
+        },
+        secondary: {
+          DEFAULT: '#0F1C30',
+          foreground: '#D8EAF5',
+        },
+        muted: {
+          DEFAULT: '#111E30',
+          foreground: '#6A88A8',
+        },
+        accent: {
+          DEFAULT: '#00BFFF',
+          foreground: '#070C14',
+        },
+        border: 'rgba(0, 229, 160, 0.12)',
+        input: '#0F1C30',
+        ring: '#00E5A0',
         brand: {
           black:   '#080D1A',
           navy:    '#0D1525',
