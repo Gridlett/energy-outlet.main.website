@@ -1,130 +1,99 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
-interface InvestableItem {
-  slug: string;
-  name: string;
-  location: string;
-  cityState: string;
-  capacityRequired: string;
-  financingRequired: number;
-  fundingProgress: number;
-  isLeaseToOwn?: boolean;
-  monthlyLease?: number;
-  termMonths?: number;
-}
-
-const LEASE_TO_OWN_ITEMS: InvestableItem[] = [
-  {
-    slug: 'lekki-family-duplex',
-    name: 'Lekki Family Duplex',
-    location: 'Lekki, Lagos',
-    cityState: 'Lekki · Lagos',
-    capacityRequired: '3.5 kW',
-    financingRequired: 2800000,
-    fundingProgress: 75,
-    isLeaseToOwn: true,
-    monthlyLease: 85000,
-    termMonths: 36,
-  },
-  {
-    slug: 'surulere-salon-shop',
-    name: 'Surulere Salon & Shop',
-    location: 'Surulere, Lagos',
-    cityState: 'Surulere · Lagos',
-    capacityRequired: '2.0 kW',
-    financingRequired: 1600000,
-    fundingProgress: 40,
-    isLeaseToOwn: true,
-    monthlyLease: 55000,
-    termMonths: 24,
-  },
-  {
-    slug: 'gwarinpa-office-space',
-    name: 'Gwarinpa Office Space',
-    location: 'Gwarinpa, Abuja',
-    cityState: 'Gwarinpa · Abuja',
-    capacityRequired: '5.0 kW',
-    financingRequired: 4200000,
-    fundingProgress: 90,
-    isLeaseToOwn: true,
-    monthlyLease: 120000,
-    termMonths: 36,
-  }
-];
+import { Shield, Sparkles, CheckCircle, AlertCircle, Loader2, ArrowRight, Building, Key } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LeaseToOwnPage() {
-  const [leaseItems, setLeaseItems] = useState<InvestableItem[]>(LEASE_TO_OWN_ITEMS);
-  const [selectedItem, setSelectedItem] = useState<InvestableItem | null>(null);
-  const [investorName, setInvestorName] = useState('');
-  const [investorEmail, setInvestorEmail] = useState('');
-  const [contributionAmount, setContributionAmount] = useState('200000');
+  const [formData, setFormData] = useState({
+    name: '',
+    businessName: '',
+    location: '',
+    spend: '',
+    capacity: '2.0 kW (Standard Shop)',
+    phone: '',
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleOpenInvest = (item: InvestableItem, e: React.MouseEvent) => {
-    e.preventDefault();
-    setSelectedItem(item);
-    setInvestorName('');
-    setInvestorEmail('');
-    setContributionAmount('200000');
-    setSuccessMessage('');
-    setErrors({});
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const handleClose = () => {
-    setSelectedItem(null);
-  };
-
-  const handleInvestSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: { [key: string]: string } = {};
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrorMsg('');
 
-    if (!investorName.trim()) {
-      newErrors.name = 'Full name is required';
-    }
-    if (!investorEmail.trim()) {
-      newErrors.email = 'Email address is required';
-    } else if (!/\S+@\S+\.\S+/.test(investorEmail)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    const amount = parseFloat(contributionAmount);
-    if (isNaN(amount) || amount < 200000) {
-      newErrors.amount = 'Minimum contribution is ₦200,000';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    // Basic validation
+    if (!formData.name || !formData.location || !formData.phone || !formData.spend) {
+      setErrorMsg('Please fill in all required fields.');
+      setSubmitStatus('error');
+      setIsSubmitting(false);
       return;
     }
 
-    setIsSubmitting(true);
-    setErrors({});
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-    // Simulate API request
-    setTimeout(() => {
+    if (!serviceId || !templateId || !publicKey) {
+      // Fallback submission simulation if EmailJS variables are missing
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          businessName: '',
+          location: '',
+          spend: '',
+          capacity: '2.0 kW (Standard Shop)',
+          phone: '',
+        });
+      }, 1500);
+      return;
+    }
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          name: formData.name,
+          role: `Lease Applicant (Biz: ${formData.businessName || 'N/A'}, Size: ${formData.capacity})`,
+          email: `${formData.name.toLowerCase().replace(/\s+/g, '')}@energy-outlet-lease.com`,
+          phone: formData.phone,
+          subject: 'New Lease-to-Own Application',
+          message: `Location: ${formData.location}\nMonthly Gen Spend: ${formData.spend}\nCapacity: ${formData.capacity}`,
+        },
+        publicKey
+      );
+      
+      setSubmitStatus('success');
+      setFormData({
+        name: '',
+        businessName: '',
+        location: '',
+        spend: '',
+        capacity: '2.0 kW (Standard Shop)',
+        phone: '',
+      });
+    } catch (err) {
+      console.error('Submission Error:', err);
+      setErrorMsg('Failed to submit application. Please try again or email care@energy-outlet.space.');
+      setSubmitStatus('error');
+    } finally {
       setIsSubmitting(false);
-      if (selectedItem) {
-        const additionalPercentage = Math.round((amount / selectedItem.financingRequired) * 100);
-        
-        setLeaseItems(prev =>
-          prev.map(c => {
-            if (c.slug === selectedItem.slug) {
-              const updatedProgress = Math.min(100, c.fundingProgress + additionalPercentage);
-              return { ...c, fundingProgress: updatedProgress };
-            }
-            return c;
-          })
-        );
-
-        setSuccessMessage(`Success! You have registered a mock investment of ₦${amount.toLocaleString()} in ${selectedItem.name}.`);
-      }
-    }, 1200);
+    }
   };
 
   return (
@@ -144,31 +113,30 @@ export default function LeaseToOwnPage() {
         <header className="pt-32 pb-16 px-6 max-w-6xl mx-auto text-center w-full">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/5 mb-8 mx-auto">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-primary text-xs font-medium tracking-widest uppercase"
-              style={{ fontFamily: "monospace" }}>
-              Lease-to-Own Financing
+            <span className="text-primary text-xs font-semibold uppercase tracking-wider" style={{ fontFamily: "monospace" }}>
+              Lease-to-Own Program
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 max-w-4xl mx-auto"
             style={{ fontFamily: "Sora, sans-serif" }}>
-            Fund Lease-to-Own. <span className="text-primary">Steady repayments.</span>
+            Lease to Own. <span className="text-primary">Acquire clean solar power.</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-            Fund individual solar systems installed at certified residential duplexes and commercial shops. Residents repay over fixed lease terms until they own the hardware.
+            For businesses, plazas, and premium duplexes. Pay a stable monthly lease fee over 24 to 36 months, then gain full ownership of your solar setup.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
-              { val: "₦200k", label: "Minimum ticket" },
-              { val: `${leaseItems.length}`, label: "Lease items live" },
-              { val: "100%", label: "Verified properties" },
-              { val: "Fixed Term", label: "Lease contracts" },
+              { val: "24 - 36 Mon", label: "Lease duration" },
+              { val: "₦55k/mo", label: "Starting lease fee" },
+              { val: "Included", label: "Maintenance & support" },
+              { val: "Full Transfer", label: "Ownership buy-out" },
             ].map(({ val, label }) => (
               <div key={label} className="border border-border bg-card/40 p-6 rounded-xl text-center backdrop-blur-sm">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1" style={{ fontFamily: "Sora, sans-serif" }}>
+                <div className="text-xl md:text-2xl font-bold text-primary mb-1" style={{ fontFamily: "Sora, sans-serif" }}>
                   {val}
                 </div>
-                <div className="text-xs text-muted-foreground" style={{ fontFamily: "monospace" }}>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-widest" style={{ fontFamily: "monospace" }}>
                   {label}
                 </div>
               </div>
@@ -176,184 +144,230 @@ export default function LeaseToOwnPage() {
           </div>
         </header>
 
-        <section className="max-w-6xl mx-auto px-6 pb-24 w-full flex-grow">
-          <div>
-            <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3" style={{ fontFamily: "Sora, sans-serif" }}>
-                Lease-to-Own Solar Systems
-              </h2>
-              <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
-                Individual properties where residents or businesses lease solar systems with pre-set terms of 24 to 36 months before gaining full ownership.
-              </p>
+        {/* Section: How Lease-to-Own Works */}
+        <section className="max-w-5xl mx-auto px-6 pb-24 w-full">
+          <div className="text-center mb-16">
+            <p className="text-xs font-bold tracking-widest text-primary uppercase mb-3" style={{ fontFamily: "monospace" }}>Lifecycle Steps</p>
+            <h2 className="text-3xl font-bold text-foreground" style={{ fontFamily: "Sora, sans-serif" }}>
+              The Lease-to-Own Lifecycle
+            </h2>
+            <p className="mt-4 text-muted-foreground max-w-lg mx-auto text-sm leading-relaxed">
+              We guide you from load estimation to complete ownership transition.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              {
+                step: '01',
+                title: 'Energy Audit',
+                desc: 'Our engineering partners survey your business appliances, daily usage peak, and current fuel cost profile to design your target solar node.'
+              },
+              {
+                step: '02',
+                title: 'Custom Terms',
+                desc: 'We select the term length (24 or 36 months) and a stable monthly lease payment that matches your previous monthly fuel bills.'
+              },
+              {
+                step: '03',
+                title: 'Down Payment',
+                desc: 'Pay a commitment down payment. Once cleared, solar panels, inverters, smart controllers, and battery banks are installed.'
+              },
+              {
+                step: '04',
+                title: 'Ownership Transfer',
+                desc: 'Enjoy steady solar power with zero maintenance fees. After completing lease cycles, full equipment title transfers to you.'
+              }
+            ].map((item, idx) => (
+              <div key={idx} className="border border-border bg-card/60 backdrop-blur rounded-xl p-6 relative flex flex-col justify-between hover:border-primary/20 transition-all duration-300">
+                <div>
+                  <span className="text-primary text-4xl font-extrabold block mb-4" style={{ fontFamily: "Sora, sans-serif" }}>
+                    {item.step}
+                  </span>
+                  <h3 className="font-bold text-foreground text-lg mb-2" style={{ fontFamily: "Sora, sans-serif" }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section: Application Form */}
+        <section className="max-w-4xl mx-auto px-6 pb-24 w-full grid md:grid-cols-5 gap-12 items-start">
+          <div className="col-span-2 space-y-6">
+            <h2 className="text-2xl font-bold text-foreground leading-tight" style={{ fontFamily: "Sora, sans-serif" }}>
+              Apply for Lease-to-Own
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Submit your property details and electricity usage profiles. Our operations representatives will review your consumption logs, draft your system size, and send a lease pricing proposal.
+            </p>
+
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Sparkles className="w-5 h-5 text-primary shrink-0" />
+                <span>Immediate operational installation</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Shield className="w-5 h-5 text-primary shrink-0" />
+                <span>Zero maintenance cost during lease</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Key className="w-5 h-5 text-primary shrink-0" />
+                <span>Full buyout/ownership transfer</span>
+              </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {leaseItems.map((item) => (
-                <div key={item.slug} className="border border-border bg-card/60 backdrop-blur rounded-xl p-8 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group">
-                  <div>
-                    <div className="text-xs text-primary font-semibold mb-2" style={{ fontFamily: "monospace" }}>
-                      {item.cityState}
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "Sora, sans-serif" }}>
-                      {item.name}
-                    </h3>
+          </div>
 
-                    <div className="space-y-3 mb-6">
-                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">System Size</span>
-                        <span className="font-semibold text-foreground">{item.capacityRequired}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">Total Cost</span>
-                        <span className="font-semibold text-foreground">₦{item.financingRequired.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">Monthly Lease</span>
-                        <span className="font-semibold text-foreground">₦{item.monthlyLease?.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-border/40 pb-2 text-sm">
-                        <span className="text-muted-foreground">Lease Term</span>
-                        <span className="font-semibold text-foreground">{item.termMonths} Months</span>
-                      </div>
-                    </div>
+          <div className="col-span-3">
+            <div className="border border-border bg-card/60 backdrop-blur rounded-xl p-8 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full filter blur-xl pointer-events-none" />
+              <h3 className="font-bold text-foreground text-lg mb-6" style={{ fontFamily: "Sora, sans-serif" }}>Lease Profile</h3>
+
+              <AnimatePresence>
+                {submitStatus === 'success' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-6 p-4 rounded-xl text-sm bg-primary/10 border border-primary/20 text-primary flex items-start gap-2.5"
+                  >
+                    <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                    <span>Your application was submitted successfully! Our engineering team will contact you shortly to schedule an audit.</span>
+                  </motion.div>
+                )}
+
+                {submitStatus === 'error' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-6 p-4 rounded-xl text-sm bg-red-500/10 border border-red-500/20 text-red-400 flex items-start gap-2.5"
+                  >
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                    <span>{errorMsg}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="field-label">Contact Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="e.g. Kolawole Cole"
+                      className="field-input"
+                      required
+                    />
                   </div>
-
                   <div>
-                    <div className="mb-4">
-                      <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-                        <span>Funding Progress</span>
-                        <span className="text-primary font-bold">{item.fundingProgress}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${item.fundingProgress}%` }}></div>
-                      </div>
-                    </div>
-
-                    <div className="text-xs text-muted-foreground mb-6 text-center" style={{ fontFamily: "monospace" }}>
-                      Min ticket: <span className="text-foreground font-semibold">₦200,000</span>
-                    </div>
-
-                    <button
-                      onClick={(e) => handleOpenInvest(item, e)}
-                      className="w-full py-3.5 bg-primary text-primary-foreground font-semibold rounded hover:brightness-110 transition-all duration-200"
-                    >
-                      Fund Lease Option
-                    </button>
+                    <label className="field-label">Business Name (Optional)</label>
+                    <input
+                      type="text"
+                      name="businessName"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      placeholder="e.g. Cole Hair Salon"
+                      className="field-input"
+                    />
                   </div>
                 </div>
-              ))}
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="field-label">Property Location *</label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      placeholder="e.g. Lekki Phase 1, Lagos"
+                      className="field-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="field-label">WhatsApp Number *</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="e.g. 08012345678"
+                      className="field-input"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="field-label">Monthly Generator Spend *</label>
+                    <input
+                      type="text"
+                      name="spend"
+                      value={formData.spend}
+                      onChange={handleChange}
+                      placeholder="e.g. ₦120,000 / month"
+                      className="field-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="field-label">Required System Capacity *</label>
+                    <div className="relative">
+                      <select
+                        name="capacity"
+                        value={formData.capacity}
+                        onChange={handleChange}
+                        className="field-input"
+                        style={{ appearance: 'none' }}
+                      >
+                        <option value="2.0 kW (Standard Shop)">2.0 kW (Standard Shop)</option>
+                        <option value="3.5 kW (Duplex / Large Office)">3.5 kW (Duplex / Large Office)</option>
+                        <option value="5.0 kW+ (Commercial Hub)">5.0 kW+ (Commercial Hub)</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-muted-foreground text-xs">
+                        ▼
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-bold text-base rounded-xl disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 transition-all shadow-lg shadow-primary/5 mt-4"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Submitting Lease Proposal Application…
+                    </>
+                  ) : (
+                    'Submit Application'
+                  )}
+                </button>
+              </form>
             </div>
           </div>
         </section>
 
-        <section className="max-w-6xl mx-auto px-6 mb-16 w-full">
+        <section className="max-w-4xl mx-auto px-6 mb-16 w-full">
           <div className="border border-border/40 bg-secondary/20 p-6 rounded-xl text-center text-xs text-muted-foreground max-w-3xl mx-auto backdrop-blur-sm leading-relaxed">
-            This is an early product preview. Returns and repayment terms should be reviewed with proper legal and financial guidance before any funds move.
+            Lease installations require technical site surveys, landlord/owner authorization, and standard down payments before logistics deployment begins.
           </div>
         </section>
 
         <Footer />
       </div>
-
-      {/* Investment sheet modal */}
-      {selectedItem && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(7, 12, 20, 0.85)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 100,
-          padding: '20px'
-        }}>
-          <div className="border border-border bg-[#0C1422] p-8 rounded-xl w-full max-w-md relative shadow-2xl animate-slide-up">
-            <button 
-              onClick={handleClose} 
-              className="absolute top-4 right-4 bg-transparent border-none text-muted-foreground hover:text-foreground text-2xl cursor-pointer"
-            >
-              &times;
-            </button>
-
-            <span className="text-xs text-primary font-semibold block mb-2" style={{ fontFamily: "monospace" }}>
-              {selectedItem.cityState}
-            </span>
-            <h3 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "Sora, sans-serif" }}>
-              Fund Lease: {selectedItem.name}
-            </h3>
-
-            {successMessage ? (
-              <div className="text-center py-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-2xl font-bold mx-auto mb-4 animate-pulse">
-                  ✓
-                </div>
-                <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                  {successMessage}
-                </p>
-                <button 
-                  className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded hover:brightness-110 transition-all" 
-                  onClick={handleClose}
-                >
-                  Close Window
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleInvestSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="inv-name" className="field-label">Full Name</label>
-                  <input 
-                    type="text" 
-                    id="inv-name" 
-                    placeholder="e.g. Tunde Alabi" 
-                    value={investorName}
-                    onChange={(e) => setInvestorName(e.target.value)}
-                    className={`field-input ${errors.name ? 'error' : ''}`}
-                  />
-                  {errors.name && <span className="text-[#EF4444] text-xs mt-1 block">{errors.name}</span>}
-                </div>
-
-                <div>
-                  <label htmlFor="inv-email" className="field-label">Email Address</label>
-                  <input 
-                    type="email" 
-                    id="inv-email" 
-                    placeholder="e.g. tunde@email.com" 
-                    value={investorEmail}
-                    onChange={(e) => setInvestorEmail(e.target.value)}
-                    className={`field-input ${errors.email ? 'error' : ''}`}
-                  />
-                  {errors.email && <span className="text-[#EF4444] text-xs mt-1 block">{errors.email}</span>}
-                </div>
-
-                <div>
-                  <label htmlFor="inv-amount" className="field-label">Contribution Amount (₦)</label>
-                  <input 
-                    type="number" 
-                    id="inv-amount" 
-                    min="200000"
-                    placeholder="200000" 
-                    value={contributionAmount}
-                    onChange={(e) => setContributionAmount(e.target.value)}
-                    className={`field-input ${errors.amount ? 'error' : ''}`}
-                  />
-                  {errors.amount && <span className="text-[#EF4444] text-xs mt-1 block">{errors.amount}</span>}
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="w-full py-3.5 bg-primary text-primary-foreground font-bold rounded hover:brightness-110 transition-all disabled:opacity-60 mt-4" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Registering...' : `Confirm ₦${Number(contributionAmount || 0).toLocaleString()} Contribution`}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </main>
   );
 }

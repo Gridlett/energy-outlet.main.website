@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Shield, Coins, CheckCircle, AlertCircle, Loader2, Building, ArrowRight, LineChart } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InvestPage() {
   const [formData, setFormData] = useState({
