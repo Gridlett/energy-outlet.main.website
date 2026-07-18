@@ -14,8 +14,8 @@ export default function HomePage() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     'name': 'Energy-Outlet',
-    'url': 'https://energy-outlet.com',
-    'logo': 'https://energy-outlet.com/icon.svg',
+    'url': 'https://energy-outlet.space',
+    'logo': 'https://energy-outlet.space/icon.svg',
     'description': 'Energy-Outlet installs solar systems inside apartments and hostels across Nigeria.',
     'sameAs': [
       'https://x.com',
