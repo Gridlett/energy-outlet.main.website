@@ -313,7 +313,7 @@ export default function PaySmallSmallPage() {
                   4. Agreement
                 </h3>
                 <div className="p-5 rounded-xl border border-border bg-[#0B111E]/40 text-xs text-muted-foreground leading-relaxed mb-6">
-                  By checking the agreement box below, I confirm that the information provided above is accurate and I agree to make consistent, timely payments in line with the plan selected. I understand that non-payment may result in service disconnection in accordance with Gridlett's terms of service, and that continued access to power is contingent on my account remaining in good standing.
+                  By checking the agreement box below, I confirm that the information provided above is accurate and I agree to make consistent, timely payments in line with the plan selected. I understand that non-payment may result in service disconnection in accordance with Energy-Outlet's terms of service, and that continued access to power is contingent on my account remaining in good standing.
                 </div>
 
                 <div className="space-y-4">
