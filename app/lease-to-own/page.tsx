@@ -122,13 +122,13 @@ export default function LeaseToOwnPage() {
             Lease to Own. <span className="text-primary">Acquire clean solar power.</span>
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-            For businesses, plazas, and premium duplexes. Pay a stable monthly lease fee over 24 to 36 months, then gain full ownership of your solar setup.
+            For businesses, plazas, and premium duplexes. Pay a stable monthly lease fee over 18 to 24 months, then gain full ownership of your solar setup.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
-              { val: "24 - 36 Mon", label: "Lease duration" },
-              { val: "₦55k/mo", label: "Starting lease fee" },
+              { val: "18 - 24 Mon", label: "Lease duration" },
+              { val: "₦100k/mo", label: "Starting lease fee" },
               { val: "Included", label: "Maintenance & support" },
               { val: "Full Transfer", label: "Ownership buy-out" },
             ].map(({ val, label }) => (
@@ -166,7 +166,7 @@ export default function LeaseToOwnPage() {
               {
                 step: '02',
                 title: 'Custom Terms',
-                desc: 'We select the term length (24 or 36 months) and a stable monthly lease payment that matches your previous monthly fuel bills.'
+                desc: 'We select the term length (18 or 24 months) and a stable monthly lease payment that matches your previous monthly fuel bills.'
               },
               {
                 step: '03',
@@ -344,7 +344,7 @@ export default function LeaseToOwnPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-bold text-base rounded-xl disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 transition-all shadow-lg shadow-primary/5 mt-4"
+                  className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-semibold rounded disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 transition-all shadow-lg shadow-primary/5 mt-4"
                 >
                   {isSubmitting ? (
                     <>

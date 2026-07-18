@@ -78,7 +78,7 @@ export default function WelcomePage() {
               </div>
               <Link
                 href="/subscriber-signup"
-                className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-500 text-black font-bold text-base rounded-xl hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-500 text-black font-semibold rounded hover:brightness-110 transition-all shadow-lg shadow-emerald-500/10"
               >
                 Subscribe Now
                 <ArrowRight className="w-4 h-4" />
@@ -119,7 +119,7 @@ export default function WelcomePage() {
               </div>
               <Link
                 href="/pay-small-small"
-                className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white font-bold text-base rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/10"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground font-semibold rounded hover:brightness-110 transition-all shadow-lg shadow-primary/10"
               >
                 Start Solar Lease
                 <ArrowRight className="w-4 h-4" />

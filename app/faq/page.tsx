@@ -159,13 +159,13 @@ export default function FAQPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/contact"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/5"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground font-semibold text-sm rounded hover:brightness-110 transition-all shadow-lg shadow-primary/5"
             >
               Get in touch
             </Link>
             <a
               href="mailto:care@energy-outlet.space"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm text-muted-foreground hover:text-foreground border border-border bg-transparent hover:bg-secondary/40 transition-all"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded font-semibold text-sm text-muted-foreground hover:text-foreground border border-border bg-transparent hover:bg-secondary/40 transition-all"
             >
               Email Support
             </a>

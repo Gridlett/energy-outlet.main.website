@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { ArrowRight, MapPin, Zap, Building2, Users, TrendingUp, Shield, Globe, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 // ─── Animated counter ────────────────────────────────────────────────────────
 function Counter({ to, suffix = "", duration = 1600 }: { to: number; suffix?: string; duration?: number }) {
@@ -62,31 +63,18 @@ function Hero() {
             Turn concentrated energy demand into a reliable, on-site power solution. We aggregate demand, deploy infrastructure, and operate local energy hubs — right where your users are.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <button className="flex items-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded font-semibold hover:brightness-110 transition-all duration-200 group">
+            <button className="flex items-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded font-semibold hover:brightness-110 transition-all duration-200 group"
+              style={{ fontFamily: "Sora, sans-serif" }}>
               Partner With Us
               <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
-            <Link href="/invest" className="flex items-center gap-2 px-6 py-3.5 border border-accent/40 text-accent rounded font-semibold hover:bg-accent/10 transition-all duration-200">
+            <Link href="/invest" className="flex items-center gap-2 px-6 py-3.5 border border-accent/40 text-accent rounded font-semibold hover:bg-accent/10 transition-all duration-200"
+              style={{ fontFamily: "Sora, sans-serif" }}>
               Deploy a Site
               <ChevronRight size={16} />
             </Link>
           </div>
-          <div className="mt-16 grid grid-cols-3 gap-6 max-w-md mx-auto">
-            {[
-              { val: 40, suffix: "+", label: "Sites Active" },
-              { val: 98, suffix: "%", label: "Uptime SLA" },
-              { val: 3, suffix: "x", label: "Owner Revenue Lift" },
-            ].map(({ val, suffix, label }) => (
-              <div key={label}>
-                <div className="text-2xl lg:text-3xl font-bold text-primary" style={{ fontFamily: "Sora, sans-serif" }}>
-                  <Counter to={val} suffix={suffix} />
-                </div>
-                <div className="text-xs text-muted-foreground mt-1" style={{ fontFamily: "monospace" }}>
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
+
         </div>
       </div>
     </section>
@@ -227,12 +215,12 @@ function FinalCTA() {
           If you own or operate a high-density property, we want to hear from you. No capital required — just the space and the demand.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <button className="flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded font-bold text-lg hover:brightness-110 transition-all group"
+          <button className="flex items-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground rounded font-semibold hover:brightness-110 transition-all group"
             style={{ fontFamily: "Sora, sans-serif" }}>
             Partner With Us
-            <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
           </button>
-          <Link href="/invest" className="flex items-center gap-2 px-8 py-4 border border-accent/40 text-accent rounded font-bold text-lg hover:bg-accent/10 transition-all"
+          <Link href="/invest" className="flex items-center gap-2 px-6 py-3.5 border border-accent/40 text-accent rounded font-semibold hover:bg-accent/10 transition-all"
             style={{ fontFamily: "Sora, sans-serif" }}>
             Deploy a Site
           </Link>
@@ -242,44 +230,6 @@ function FinalCTA() {
   );
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
-function Footer() {
-  return (
-    <footer className="border-t border-border py-10">
-      <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
-            <Zap size={12} className="text-primary-foreground" fill="currentColor" />
-          </div>
-          <span className="font-bold text-foreground text-sm" style={{ fontFamily: "Sora, sans-serif" }}>
-            ENERGY OUTLET
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground text-center md:text-left" style={{ fontFamily: "monospace" }}>
-          © 2025 Energy Outlet by Gridlett. Demand-first energy infrastructure.
-        </p>
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 md:justify-end">
-          <Link href="/invest" className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            style={{ fontFamily: "monospace" }}>
-            Invest
-          </Link>
-          <Link href="/lease-to-own" className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            style={{ fontFamily: "monospace" }}>
-            Lease to Own
-          </Link>
-          <Link href="/about" className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            style={{ fontFamily: "monospace" }}>
-            About Us
-          </Link>
-          <Link href="/contact" className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            style={{ fontFamily: "monospace" }}>
-            Contact
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 // ─── Landing Page Content ────────────────────────────────────────────────────
 export default function LandingPageContent() {

@@ -168,7 +168,7 @@ export default function AboutPage() {
               <GetStartedButton />
               <a
                 href="mailto:care@energy-outlet.space"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-muted-foreground hover:text-foreground border border-border bg-transparent hover:bg-secondary/40 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded font-semibold text-base text-muted-foreground hover:text-foreground border border-border bg-transparent hover:bg-secondary/40 transition-all"
               >
                 Contact Support
               </a>

@@ -11,7 +11,7 @@ export default function GetStartedButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold text-base rounded-xl shadow-lg shadow-primary/5 hover:brightness-110 transition-all"
+        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold text-base rounded shadow-lg shadow-primary/5 hover:brightness-110 transition-all"
       >
         Get started
         <ArrowRight className="w-4 h-4" />
