@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PlanOption {
+  capacity: string;
   amount: number;
   duration: string;
 }
@@ -21,16 +22,14 @@ export default function PaySmallSmallPage() {
     email: '',
     preferredCommunication: 'Both',
     selectedPlanIdx: 0,
-    capacityRequested: '',
     signatureName: '',
     agreed: false
   });
 
   const planOptions: PlanOption[] = [
-    { amount: 20000, duration: 'Weekly' },
-    { amount: 50000, duration: 'Weekly' },
-    { amount: 100000, duration: 'Monthly' },
-    { amount: 150000, duration: 'Monthly' },
+    { capacity: '2.0 KW', amount: 51300, duration: '78 Weeks' },
+    { capacity: '3.5 KW', amount: 76950, duration: '78 Weeks' },
+    { capacity: '5.0 KW', amount: 108980, duration: '78 Weeks' },
   ];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,15 +52,8 @@ export default function PaySmallSmallPage() {
     setSubmitStatus(null);
     setErrorMsg('');
 
-    if (!formData.fullName || !formData.phoneNumber || !formData.address || !formData.signatureName || !formData.capacityRequested) {
+    if (!formData.fullName || !formData.phoneNumber || !formData.address || !formData.signatureName) {
       setErrorMsg('Please fill in all required fields.');
-      setSubmitStatus('error');
-      return;
-    }
-
-    const capacity = parseFloat(formData.capacityRequested);
-    if (isNaN(capacity) || capacity <= 0 || capacity > 3.5) {
-      setErrorMsg('Capacity requested must be between 0.01 kW and 3.5 kW.');
       setSubmitStatus('error');
       return;
     }
@@ -85,7 +77,7 @@ export default function PaySmallSmallPage() {
         preferredCommunication: formData.preferredCommunication,
         leaseAmount: selectedPlan.amount,
         leaseDuration: selectedPlan.duration,
-        capacityRequestedKw: capacity,
+        capacityRequestedKw: parseFloat(selectedPlan.capacity),
         signatureName: formData.signatureName.trim()
       };
 
@@ -110,7 +102,6 @@ export default function PaySmallSmallPage() {
         email: '',
         preferredCommunication: 'Both',
         selectedPlanIdx: 0,
-        capacityRequested: '',
         signatureName: '',
         agreed: false
       });
@@ -277,14 +268,15 @@ export default function PaySmallSmallPage() {
                   3. Pay Small Small Plan
                 </h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Choose ONE plan below indicating what you budget to pay. Our team will verify and quote your pricing structure.
+                  Select ONE solar capacity lease option below.
                 </p>
 
-                <div className="overflow-x-auto rounded-xl border border-border bg-[#0B111E]/40 mb-6">
+                <div className="overflow-x-auto rounded-xl border border-border bg-[#0B111E]/40">
                   <table className="w-full text-left border-collapse text-sm">
                     <thead>
                       <tr className="border-b border-border bg-[#10192C]/70">
-                        <th className="p-4 font-semibold text-slate-200">Amount</th>
+                        <th className="p-4 font-semibold text-slate-200">Capacity</th>
+                        <th className="p-4 font-semibold text-slate-200">Amount Weekly</th>
                         <th className="p-4 font-semibold text-slate-200">Duration</th>
                         <th className="p-4 font-semibold text-slate-200 text-center">Select (one only)</th>
                       </tr>
@@ -296,6 +288,7 @@ export default function PaySmallSmallPage() {
                           onClick={() => handlePlanSelect(idx)}
                           className="hover:bg-[#10192C]/20 transition-colors cursor-pointer"
                         >
+                          <td className="p-4 font-bold text-slate-200">{option.capacity}</td>
                           <td className="p-4 font-mono font-bold text-slate-200">₦{option.amount.toLocaleString()}</td>
                           <td className="p-4 text-slate-400">{option.duration}</td>
                           <td className="p-4 text-center">
@@ -311,27 +304,6 @@ export default function PaySmallSmallPage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="field-label">Capacity Requested (kW, max 3.5kW) *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      max="3.5"
-                      name="capacityRequested"
-                      value={formData.capacityRequested}
-                      onChange={handleInputChange}
-                      placeholder="e.g. 2.0"
-                      className="field-input"
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground mt-1.5">
-                      Specify requested load size in kW (maximum 3.5 kW limit for small systems).
-                    </p>
-                  </div>
                 </div>
               </div>
 
@@ -386,8 +358,8 @@ export default function PaySmallSmallPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting || !formData.agreed || !formData.capacityRequested}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white font-bold text-base rounded-xl disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 transition-all shadow-lg shadow-primary/10 mt-6"
+                disabled={isSubmitting || !formData.agreed}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-semibold rounded disabled:opacity-60 disabled:cursor-not-allowed hover:brightness-110 transition-all shadow-lg shadow-primary/10 mt-6"
               >
                 {isSubmitting ? (
                   <>

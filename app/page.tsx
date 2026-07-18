@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import LandingPageContent from '@/components/LandingPageContent'
 
 export const metadata: Metadata = {
-  title: 'Energy-Outlet - Reliable Solar Subscriptions',
+  title: 'Energy-Outlet - Reliable Solar Solutions',
   description: 'Energy-Outlet installs solar systems inside apartments and hostels across Nigeria. Residents pick the power they need. Investors fund the capacity.',
   alternates: {
     canonical: 'https://energy-outlet.space',

@@ -27,12 +27,12 @@ export default function SubscriberSignupPage() {
   });
 
   const [items, setItems] = useState<ItemRow[]>([
-    { name: 'Bulb', watts: '60W', price: 1000, qty: 0 },
-    { name: 'Fan', watts: '150W', price: 2500, qty: 0 },
-    { name: 'TV', watts: '200W', price: 3800, qty: 0 },
-    { name: 'Small Appliance', watts: '300W', price: 6000, qty: 0 },
-    { name: 'Big Appliance', watts: '600W', price: 12000, qty: 0 },
-    { name: 'Biggest Appliance', watts: '900W', price: 18000, qty: 0 },
+    { name: 'Bulb or Phone (T-Tiny)', watts: '60W', price: 1000, qty: 0 },
+    { name: 'T-Tiny + Fan (T-Small)', watts: '150W', price: 2500, qty: 0 },
+    { name: 'T-Small + TV (T-Medium)', watts: '200W', price: 3800, qty: 0 },
+    { name: 'Small Appliances (B-Small)', watts: '300W', price: 6000, qty: 0 },
+    { name: 'Big Appliance (B-Medium)', watts: '600W', price: 12000, qty: 0 },
+    { name: 'Biggest Appliance (Biggie)', watts: '1000W', price: 19000, qty: 0 },
   ]);
 
   const [totalWeeklyPayment, setTotalWeeklyPayment] = useState(0);
