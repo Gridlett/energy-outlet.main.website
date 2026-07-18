@@ -14,9 +14,9 @@ export default function Footer() {
     <>
       <footer className="py-14 border-t border-[#1e2d45] mt-auto w-full">
         <div className="max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-sm text-slate-400">Energy Outlet</div>
+          <div className="text-sm text-slate-400 text-center md:text-left">Energy Outlet by Gridlett</div>
           
-          <div className="flex gap-6 text-[13px] text-slate-400 font-medium">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px] text-slate-400 font-medium md:justify-end">
             {isHome ? (
               <>
                 <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
